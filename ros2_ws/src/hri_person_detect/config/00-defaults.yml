@@ -1,0 +1,25 @@
+# Default runtime values for hri_person_detect.
+# The Python node exposes these as CLI arguments.
+
+distance_threshold: 200
+detection_confidence_score: 0.5
+num_cameras: 4
+debug: false
+debug_dir: ./debug_output
+device: cuda:0
+camera_frame: camera_link
+
+camera_topics:
+  cam_1:
+    color: /camera_1/realsense_camera_1/color/image_raw
+    depth: /camera_1/realsense_camera_1/depth/image_rect_raw
+    depth_info: /camera_1/realsense_camera_1/depth/camera_info
+  cam_2:
+    color: /camera_2/realsense_camera_2/color/image_raw
+    depth: /camera_2/realsense_camera_2/depth/image_rect_raw
+    depth_info: /camera_2/realsense_camera_2/depth/camera_info
+
+publishers:
+  cam_1_boxes: /camera_1/bounding_boxes_3d
+  cam_2_boxes: /camera_2/bounding_boxes_3d
+  combined_boxes: /vision/bounding_boxes_3d

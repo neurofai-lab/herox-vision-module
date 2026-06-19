@@ -1,0 +1,8 @@
+# Most dependencies are expected to be inside the supplied vulx-mmdet:jp6-cu122 image.
+# Use this only if you need to patch a missing Python dependency.
+
+numpy
+opencv-python
+torch
+pyrealsense2
+deep-sort-realtime

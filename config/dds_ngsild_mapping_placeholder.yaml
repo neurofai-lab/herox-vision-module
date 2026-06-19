@@ -1,0 +1,7 @@
+status: planned
+note: "Add DDS Enabler mapping for /vision/bounding_boxes_3d and /humans/bodies topics if required by final ARISE D4 integration."
+ros_topics:
+  - /vision/bounding_boxes_3d
+  - /humans/bodies/tracked
+  - /humans/bodies/<body_id>/roi
+  - /humans/bodies/<body_id>/position

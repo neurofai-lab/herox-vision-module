@@ -1,0 +1,12 @@
+name: hri_person_detect
+description: ROS2 person-only RTMDet/DeepSort/Realsense 3D bounding box publisher.
+entrypoint: ros2 launch hri_person_detect hri_person_detect.launch.py
+outputs:
+  - /camera_1/bounding_boxes_3d
+  - /camera_2/bounding_boxes_3d
+  - /vision/bounding_boxes_3d
+
+ros4hri_outputs:
+  - /humans/bodies/tracked
+  - /humans/bodies/<body_id>/roi
+  - /humans/bodies/<body_id>/position
