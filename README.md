@@ -1,4 +1,4 @@
-# HERoX Human Body Perception Module
+# HEROX Human Body Perception Module
 
 Reusable ROS 2/Vulcanexus-compatible HRI vision module extracted from the HERoX demonstrator. The module detects and tracks humans from RGB-D camera streams, estimates 3D body positions using depth data, and publishes both legacy 3D bounding box outputs and ROS4HRI-style body topics.
 
