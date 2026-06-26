@@ -1,9 +1,0 @@
-{
-  "id": "urn:ngsi-ld:Human:person_c1_example",
-  "type": "Human",
-  "sourceCamera": {"type": "Property", "value": "camera_1"},
-  "trackingId": {"type": "Property", "value": "person_c1_example"},
-  "position3D": {"type": "Property", "value": {"x": 0.0, "y": 0.0, "z": 0.0}, "unitCode": "MTR"},
-  "roi": {"type": "Property", "value": {"xmin": 0.0, "ymin": 0.0, "xmax": 1.0, "ymax": 1.0}},
-  "@context": ["https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"]
-}
