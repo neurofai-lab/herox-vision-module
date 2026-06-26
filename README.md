@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # hri_person_detect
+=======
+# HEROX Human Body Perception Module
+>>>>>>> 779846b7d35d7ec6c062e70d82c595021fb2443e
 
 ROS2-style package wrapping the original `latest_publish_nav_cams_correctdistance_people_only.py` script.
 
