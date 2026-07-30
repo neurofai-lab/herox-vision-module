@@ -104,3 +104,73 @@ The node also publishes ROS4HRI-compatible body topics using DeepSort track IDs:
 - `/humans/bodies/<body_id>/position` (`geometry_msgs/PointStamped`)
 
 Body IDs are generated as `person_c1_<track_id>` and `person_c2_<track_id>` to keep IDs stable and unique across both cameras.
+
+# ROS 2 Interfaces and Configuration
+
+This section documents the inputs, outputs, message types, and configurable runtime options of the HEROX vision module.
+
+## Input topics
+
+The node subscribes to RGB images, depth images, and depth-camera calibration data from two Intel RealSense cameras.
+
+| Camera | Topic | Message type | Description |
+|---|---|---|---|
+| Camera 1 | `/camera_1/realsense_camera_1/color/image_raw` | `sensor_msgs/msg/Image` | RGB image used for person detection |
+| Camera 1 | `/camera_1/realsense_camera_1/depth/image_rect_raw` | `sensor_msgs/msg/Image` | Depth image used for distance and 3D-position estimation |
+| Camera 1 | `/camera_1/realsense_camera_1/depth/camera_info` | `sensor_msgs/msg/CameraInfo` | Camera intrinsics used for 2D-to-3D projection |
+| Camera 2 | `/camera_2/realsense_camera_2/color/image_raw` | `sensor_msgs/msg/Image` | RGB image used for person detection |
+| Camera 2 | `/camera_2/realsense_camera_2/depth/image_rect_raw` | `sensor_msgs/msg/Image` | Depth image used for distance and 3D-position estimation |
+| Camera 2 | `/camera_2/realsense_camera_2/depth/camera_info` | `sensor_msgs/msg/CameraInfo` | Camera intrinsics used for 2D-to-3D projection |
+
+RGB and depth images are synchronized using an approximate-time synchronizer with a queue size of `10` and a tolerance of `0.1 s`.
+
+## Output topics
+
+| Topic | Message type | Description |
+|---|---|---|
+| `/camera_1/bounding_boxes_3d` | `vision_msgs/msg/BoundingBox3DArray` | 3D person detections from camera 1 |
+| `/camera_2/bounding_boxes_3d` | `vision_msgs/msg/BoundingBox3DArray` | 3D person detections from camera 2 |
+| `/vision/bounding_boxes_3d` | `vision_msgs/msg/BoundingBox3DArray` | Shared topic receiving detections from both camera pipelines |
+| `/humans/bodies/tracked` | `hri_msgs/msg/IdsList` | IDs of currently tracked bodies |
+| `/humans/bodies/<body_id>/roi` | `hri_msgs/msg/NormalizedRegionOfInterest2D` | Normalized 2D region and detection confidence |
+| `/humans/bodies/<body_id>/position` | `geometry_msgs/msg/PointStamped` | Estimated 3D position of the tracked body |
+
+Tracked body IDs follow the format:
+
+```text
+person_c1_<track_id>
+person_c2_<track_id>
+```
+
+The shared `/vision/bounding_boxes_3d` topic receives messages from both cameras. The current module does not perform cross-camera fusion or duplicate-person removal.
+
+## Configurable parameters
+
+The node is configured through command-line arguments. The launch file exposes the commonly used options shown below.
+
+| Option | Type | Default | Description |
+|---|---|---:|---|
+| `distance_threshold` | float | `200` | Maximum accepted distance for a detected person |
+| `detection_confidence_score` | float | `0.5` | Minimum detector confidence |
+| `num_cameras` | integer | `4` | Number of executor threads used by the node |
+| `debug_dir` | string | `./debug_output` | Directory for debug images |
+| `device` | string | `cuda:0` | Inference device, for example `cuda:0` or `cpu` |
+| `hri_track_timeout` | float | `1.0` | Time in seconds before an unseen body ID is removed |
+
+Additional executable options are:
+
+| Option | Default | Description |
+|---|---|---|
+| `--debug` | disabled | Enables saving annotated debug images |
+| `--model_cfg` | packaged configuration | Path to an alternative MMDetection configuration |
+| `--checkpoint` | packaged checkpoint | Path to an alternative model checkpoint |
+
+
+## Interface verification
+
+```bash
+ros2 topic type /vision/bounding_boxes_3d
+ros2 topic type /humans/bodies/tracked
+ros2 topic echo /humans/bodies/tracked
+```
+
