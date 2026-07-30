@@ -135,6 +135,7 @@ RGB and depth images are synchronized using an approximate-time synchronizer wit
 | `/humans/bodies/<body_id>/roi`      | `hri_msgs/msg/NormalizedRegionOfInterest2D` | Published whenever the corresponding body is detected and tracked                 | Normalized 2D region and confidence               |
 | `/humans/bodies/<body_id>/position` | `geometry_msgs/msg/PointStamped`            | Published whenever a valid depth-based position is available for the tracked body | Estimated 3D body position                        |
 
+The effective publication frequency depends on the incoming camera frame rate and inference time. The node publishes detection results after processing synchronized RGB and depth frames rather than at a fixed configured frequency.
 
 Tracked body IDs follow the format:
 
