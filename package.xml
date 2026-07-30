@@ -6,7 +6,7 @@
   <description>ROS2 package for person-only RTMDet instance segmentation, DeepSort tracking, and Realsense depth-based 3D bounding box publishing.</description>
 
   <maintainer email="ceo@neurofai.de">NeuroFAI</maintainer>
-  <license>AGPL-3.0</license>
+  <license>GNU AGPL v3</license>
 
   <buildtool_depend>ament_python</buildtool_depend>
 
