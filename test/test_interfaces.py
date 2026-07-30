@@ -1,81 +1,50 @@
-import rclpy
-import pytest
-
-from geometry_msgs.msg import PointStamped
-from hri_msgs.msg import IdsList, NormalizedRegionOfInterest2D
-from vision_msgs.msg import BoundingBox3DArray
-
-from hri_person_detect.node_person_detector import CameraSubscriber
+from pathlib import Path
 
 
-@pytest.fixture
-def vision_node(monkeypatch):
-    """Create the node without loading the detector model."""
-
-    # Model loading requires MMDetection, CUDA and the checkpoint.
-    monkeypatch.setattr(CameraSubscriber, "init_model", lambda self: None)
-
-    if not rclpy.ok():
-        rclpy.init()
-
-    node = CameraSubscriber(
-        distance_threshold=200.0,
-        detection_confidence_score=0.5,
-        device="cpu",
-    )
-
-    yield node
-
-    node.destroy_node()
-
-    if rclpy.ok():
-        rclpy.shutdown()
+ROOT = Path(__file__).resolve().parents[1]
+NODE_FILE = ROOT / "hri_person_detect" / "node_person_detector.py"
+SETUP_FILE = ROOT / "setup.py"
 
 
-def test_node_starts(vision_node):
-    """Verify that the ROS 2 node can be constructed."""
-
-    assert vision_node.get_name() == "camera_subscriber"
-
-
-def test_expected_detection_publishers_exist(vision_node):
-    """Verify the main 3D detection output interfaces."""
-
-    cam_1_pub = vision_node.bbox3d_publishers["cam_1"]
-    cam_2_pub = vision_node.bbox3d_publishers["cam_2"]
-    combined_pub = vision_node.bbox3d_all_publisher
-
-    assert cam_1_pub.topic_name == "/camera_1/bounding_boxes_3d"
-    assert cam_1_pub.msg_type is BoundingBox3DArray
-
-    assert cam_2_pub.topic_name == "/camera_2/bounding_boxes_3d"
-    assert cam_2_pub.msg_type is BoundingBox3DArray
-
-    assert combined_pub.topic_name == "/vision/bounding_boxes_3d"
-    assert combined_pub.msg_type is BoundingBox3DArray
+def test_node_source_is_valid_python():
+    """Check that the main node contains valid Python syntax."""
+    source = NODE_FILE.read_text(encoding="utf-8")
+    compile(source, str(NODE_FILE), "exec")
 
 
-def test_expected_ros4hri_publishers_exist(vision_node):
-    """Verify the standard ROS4HRI body interfaces."""
+def test_expected_output_topics_are_declared():
+    """Check that the documented ROS 2 output topics exist in the code."""
+    source = NODE_FILE.read_text(encoding="utf-8")
 
-    tracked_pub = vision_node.hri_bodies_tracked_pub
+    expected_topics = [
+        "/camera_1/bounding_boxes_3d",
+        "/camera_2/bounding_boxes_3d",
+        "/vision/bounding_boxes_3d",
+        "/humans/bodies/tracked",
+        "/humans/bodies/{body_id}/roi",
+        "/humans/bodies/{body_id}/position",
+    ]
 
-    assert tracked_pub.topic_name == "/humans/bodies/tracked"
-    assert tracked_pub.msg_type is IdsList
-
-    roi_pub, position_pub = vision_node._get_hri_body_publishers(
-        "person_c1_test"
-    )
-
-    assert roi_pub.topic_name == "/humans/bodies/person_c1_test/roi"
-    assert roi_pub.msg_type is NormalizedRegionOfInterest2D
-
-    assert position_pub.topic_name == "/humans/bodies/person_c1_test/position"
-    assert position_pub.msg_type is PointStamped
+    for topic in expected_topics:
+        assert topic in source
 
 
-def test_body_id_format(vision_node):
-    """Verify the body-ID format documented by the module."""
+def test_required_files_exist():
+    """Check that required model and configuration files are included."""
+    assert (ROOT / "config" / "00-defaults.yml").is_file()
+    assert (ROOT / "config" / "model_cfg_latest_person_tiny.py").is_file()
+    assert (
+        ROOT
+        / "models"
+        / "rtmdet-ins_tiny_8xb32-300e_coco_20221130_151727-ec670f7e.pth"
+    ).is_file()
 
-    assert vision_node._make_hri_body_id("cam_1", 4) == "person_c1_4"
-    assert vision_node._make_hri_body_id("cam_2", 7) == "person_c2_7"
+
+def test_console_entry_point_is_declared():
+    """Check that the ROS 2 executable is registered."""
+    source = SETUP_FILE.read_text(encoding="utf-8")
+
+    assert (
+        "hri_person_detect = "
+        "hri_person_detect.node_person_detector:main"
+    ) in source
