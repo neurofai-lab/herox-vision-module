@@ -20,7 +20,7 @@ setup(
     maintainer='Shino Sam',
     maintainer_email='shino.sam@dfki.de',
     description='ROS2 person-only RTMDet/DeepSort/Realsense 3D bounding box publisher.',
-    license='Apache-2.0',
+    license='GNU AGPL v3',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
