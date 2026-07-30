@@ -126,14 +126,15 @@ RGB and depth images are synchronized using an approximate-time synchronizer wit
 
 ## Output topics
 
-| Topic | Message type | Description |
-|---|---|---|
-| `/camera_1/bounding_boxes_3d` | `vision_msgs/msg/BoundingBox3DArray` | 3D person detections from camera 1 |
-| `/camera_2/bounding_boxes_3d` | `vision_msgs/msg/BoundingBox3DArray` | 3D person detections from camera 2 |
-| `/vision/bounding_boxes_3d` | `vision_msgs/msg/BoundingBox3DArray` | Shared topic receiving detections from both camera pipelines |
-| `/humans/bodies/tracked` | `hri_msgs/msg/IdsList` | IDs of currently tracked bodies |
-| `/humans/bodies/<body_id>/roi` | `hri_msgs/msg/NormalizedRegionOfInterest2D` | Normalized 2D region and detection confidence |
-| `/humans/bodies/<body_id>/position` | `geometry_msgs/msg/PointStamped` | Estimated 3D position of the tracked body |
+| Topic                               | Message type                                | Update trigger                                                                    | Description                                       |
+| ----------------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `/camera_1/bounding_boxes_3d`       | `vision_msgs/msg/BoundingBox3DArray`        | After each synchronized camera-1 RGB/depth pair is processed                      | 3D person detections from camera 1                |
+| `/camera_2/bounding_boxes_3d`       | `vision_msgs/msg/BoundingBox3DArray`        | After each synchronized camera-2 RGB/depth pair is processed                      | 3D person detections from camera 2                |
+| `/vision/bounding_boxes_3d`         | `vision_msgs/msg/BoundingBox3DArray`        | Whenever either camera pipeline publishes a detection result                      | Shared output receiving results from both cameras |
+| `/humans/bodies/tracked`            | `hri_msgs/msg/IdsList`                      | Updated after detection processing and when tracked IDs expire                    | IDs of currently tracked bodies                   |
+| `/humans/bodies/<body_id>/roi`      | `hri_msgs/msg/NormalizedRegionOfInterest2D` | Published whenever the corresponding body is detected and tracked                 | Normalized 2D region and confidence               |
+| `/humans/bodies/<body_id>/position` | `geometry_msgs/msg/PointStamped`            | Published whenever a valid depth-based position is available for the tracked body | Estimated 3D body position                        |
+
 
 Tracked body IDs follow the format:
 
